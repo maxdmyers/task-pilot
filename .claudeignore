@@ -1,0 +1,8 @@
+node_modules/
+data/
+*.log
+.DS_Store
+coverage/
+
+# We exclude /data because task data is user-specific and
+# not relevant context for code tasks
