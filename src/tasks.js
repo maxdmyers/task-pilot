@@ -1,6 +1,6 @@
 const { loadTasks, saveTasks } = require('./storage');
 
-function addTask(description, priority = 'medium') {
+function addTask(description, priority = 'medium', dueDate = null) {
   const tasks = loadTasks();
   const id = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
 
@@ -12,15 +12,28 @@ function addTask(description, priority = 'medium') {
     createdAt: new Date().toISOString(),
   };
 
+  if (dueDate) {
+    task.dueDate = dueDate;
+  }
+
   tasks.push(task);
   saveTasks(tasks);
   return task;
 }
 
-function listTasks(filterPriority) {
-  const tasks = loadTasks();
+function isOverdue(task) {
+  if (!task.dueDate || task.completed) return false;
+  const today = new Date().toISOString().slice(0, 10);
+  return task.dueDate < today;
+}
+
+function listTasks(filterPriority, { overdue } = {}) {
+  let tasks = loadTasks();
   if (filterPriority) {
-    return tasks.filter(t => t.priority === filterPriority);
+    tasks = tasks.filter(t => t.priority === filterPriority);
+  }
+  if (overdue) {
+    tasks = tasks.filter(t => isOverdue(t));
   }
   return tasks;
 }
@@ -47,4 +60,4 @@ function deleteTask(id) {
   return removed;
 }
 
-module.exports = { addTask, listTasks, completeTask, deleteTask };
+module.exports = { addTask, listTasks, completeTask, deleteTask, isOverdue };

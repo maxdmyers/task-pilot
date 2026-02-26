@@ -23,6 +23,9 @@ function saveTasks(tasks) {
     entry.priority = entry.priority || 'medium';
     entry.description = entry.description.slice(0, 200);
     entry.completed = Boolean(entry.completed);
+    if (!entry.dueDate) {
+      delete entry.dueDate;
+    }
     return entry;
   });
 
