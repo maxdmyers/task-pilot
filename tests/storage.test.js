@@ -54,4 +54,24 @@ describe('saveTasks', () => {
     const parsed = JSON.parse(raw);
     expect(parsed[0].priority).toBe('medium');
   });
+
+  test('preserves dueDate when present', () => {
+    const tasks = [
+      { id: 1, description: 'With date', priority: 'high', completed: false, createdAt: '2026-02-20T10:00:00.000Z', dueDate: '2026-03-01' },
+    ];
+    saveTasks(tasks);
+    const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+    const parsed = JSON.parse(raw);
+    expect(parsed[0].dueDate).toBe('2026-03-01');
+  });
+
+  test('omits dueDate field when not set', () => {
+    const tasks = [
+      { id: 1, description: 'No date', priority: 'medium', completed: false, createdAt: '2026-02-20T10:00:00.000Z' },
+    ];
+    saveTasks(tasks);
+    const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+    const parsed = JSON.parse(raw);
+    expect(parsed[0]).not.toHaveProperty('dueDate');
+  });
 });
